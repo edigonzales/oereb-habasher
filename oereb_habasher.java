@@ -24,22 +24,29 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 public class oereb_habasher {
-
+    //Map urls = Map.of...
+    
     public static void main(String... args) throws IOException, InterruptedException, ExecutionException {
-        List<String> egrids = Files.readAllLines(Paths.get("egrid_sh.csv"));
+        String canton = "bl";
+        int nThreads = 10;
+        
+        List<String> egrids = Files.readAllLines(Paths.get("egrid_"+canton+".csv"));
 
         HttpClient httpClient = HttpClient.newBuilder()
                 .version(Version.HTTP_1_1)
                 .followRedirects(Redirect.NORMAL)
                 .build();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
         for (String egrid : egrids) {
             executorService.submit(() -> {
                 //String url = "https://oereb.geo.sh.ch/oereb/extract/reduced/xml/"+egrid;
                 //String url = "https://oereb.geo.sh.ch/oereb/extract/reduced/xml/"+egrid+"?WITHIMAGES=true&GEOMETRY=true";
-                String url = "https://oereb.sh.opengis.ch/extract/xml/?GEOMETRY=true&WITHIMAGES=true&EGRID="+egrid;
-                //String url = "https://geo.so.ch/api/oereb/extract/xml/?EGRID="+egrid+"&GEOMETRY=true&WITHIMAGES=true";                
+                //String url = "https://oereb.sh.opengis.ch/extract/xml/?GEOMETRY=true&WITHIMAGES=true&EGRID="+egrid;
+                //String url = "https://geo.so.ch/api/oereb/extract/xml/?EGRID="+egrid+"&GEOMETRY=true&WITHIMAGES=true";
+                String url = "https://oereb.geo.bl.ch/extract/xml/?EGRID="+egrid+"&GEOMETRY=true&WITHIMAGES=true"; 
+                //String url = "https://prozessor-oereb.ur.ch/oereb/extract/xml/?EGRID="+egrid;
+
                 try {
                     HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
                     out.println(url);
@@ -54,4 +61,5 @@ public class oereb_habasher {
             });
         }
         executorService.shutdown();
+    }
 }
